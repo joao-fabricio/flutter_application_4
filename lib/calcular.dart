@@ -19,7 +19,7 @@ class AnimatedAlignExample extends StatelessWidget {
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.purpleAccent,
+          backgroundColor: Color(0xFF2C3E50),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,6 +55,7 @@ class _MainAppState extends State<MainApp> {
   double imc = 0;
   bool selected = false;
   bool mostraResultado = false;
+  bool voltarInicio = false;
 
   void calcularImc() {
     imc = (peso / (altura * altura));
@@ -79,6 +80,18 @@ class _MainAppState extends State<MainApp> {
       return "Obesidade grau II";
     } else {
       return "Obesidade garu III";
+    }
+  }
+
+  Color mudarCor() {
+    if (imc >= 0 && imc <= 18.4) {
+      return Colors.red;
+    } else if (imc >= 18.5 && imc <= 24.9) {
+      return Colors.green;
+    } else if (imc >= 25 && imc <= 29.9) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
     }
   }
 
@@ -114,6 +127,10 @@ class _MainAppState extends State<MainApp> {
                       TextFormField(
                         controller: _nomeController,
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 30,
+                            horizontal: 16,
+                          ),
                           icon: Icon(Icons.people),
                           labelText: 'Nome',
                           hintText: 'Digite seu nome',
@@ -136,6 +153,10 @@ class _MainAppState extends State<MainApp> {
                       TextFormField(
                         controller: _pesoController,
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 30,
+                            horizontal: 16,
+                          ),
                           icon: Icon(Icons.scale),
                           labelText: 'Peso',
                           hintText: 'Digite seu peso',
@@ -172,6 +193,10 @@ class _MainAppState extends State<MainApp> {
                       TextFormField(
                         controller: _alturaController,
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 30,
+                            horizontal: 16,
+                          ),
                           icon: Icon(Icons.accessibility),
                           labelText: 'Altura',
                           hintText: 'Digite sua altura',
@@ -205,34 +230,38 @@ class _MainAppState extends State<MainApp> {
 
                       SizedBox(height: 50),
 
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            peso = double.parse(
-                              _pesoController.text.replaceAll(',', '.'),
-                            );
-                            altura = double.parse(
-                              _alturaController.text.replaceAll(',', '.'),
-                            );
+                      SizedBox(
+                        width: 200,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              peso = double.parse(
+                                _pesoController.text.replaceAll(',', '.'),
+                              );
+                              altura = double.parse(
+                                _alturaController.text.replaceAll(',', '.'),
+                              );
 
-                            setState(() {
-                              mostraResultado = true;
-                            });
+                              setState(() {
+                                mostraResultado = true;
+                              });
 
-                            calcularImc();
-                            print('IMC: ${imc.toString()}');
+                              calcularImc();
+                              // print('IMC: ${imc.toString()}');
 
-                            print('Nome: ${_nomeController.text}');
-                            print('Peso: ${_pesoController.text} Kg');
-                            print('Altura: ${_alturaController.text} m');
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purpleAccent,
-                        ),
-                        child: Text(
-                          "Calcular IMC",
-                          style: TextStyle(color: Colors.white),
+                              // print('Nome: ${_nomeController.text}');
+                              // print('Peso: ${_pesoController.text} Kg');
+                              // print('Altura: ${_alturaController.text} m');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF2C3E50),
+                          ),
+                          child: Text(
+                            "Calcular IMC",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -241,14 +270,15 @@ class _MainAppState extends State<MainApp> {
               ),
             ),
           ),
-          if (mostraResultado)
-            Container(
+          AnimatedSlide(
+            duration: Duration(milliseconds: 500),
+            offset: mostraResultado ? Offset(0, 0) : Offset(0, 1),
+            child: Container(
               width: double.infinity,
-              height: double.infinity,
               margin: EdgeInsets.only(top: 30),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.purpleAccent,
+                color: mudarCor(),
                 borderRadius: BorderRadius.circular(20),
               ),
 
@@ -256,7 +286,6 @@ class _MainAppState extends State<MainApp> {
                 children: [
                   Text(
                     "Seu IMC: ${imc.toStringAsFixed(2)}",
-
                     style: TextStyle(color: Colors.white, fontSize: 30),
                   ),
 
@@ -264,9 +293,21 @@ class _MainAppState extends State<MainApp> {
                     "Sua classificação: ${classificarImc(imc)}",
                     style: TextStyle(color: Colors.white, fontSize: 30),
                   ),
+
+                  SizedBox(height: 50),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        mostraResultado = false;
+                      });
+                    },
+                    child: Text("Fazer novo cálculo"),
+                  ),
                 ],
               ),
             ),
+          ),
         ],
       ),
     );
