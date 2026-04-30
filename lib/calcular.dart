@@ -299,6 +299,8 @@ class _MainAppState extends State<MainApp> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
+                        _pesoController.clear();
+                        _alturaController.clear();
                         mostraResultado = false;
                       });
                     },
